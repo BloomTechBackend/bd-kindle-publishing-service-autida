@@ -1,1 +1,88 @@
 PARTICIPANTS: use this file for creating the class diagram in mastery task 01
+@startuml
+'Dao
+class CatalogDao{
+- dynamoDbMapper: DynamoDBMapper
++ CatalogDao(DynamoDBMapper)
++ getBookFromCatalog(String): CatalogItemVersion
++ getLatestVersionOfBook(String): CatalogItemVersion
+}
+class PublishingStatusDao{
+- ADDITIONAL_NOTES_PREFIX: String
+- dynamoDbMapper: DynamoDBMapper
++ PublishingStatusDao(DynamoDBMapper)
++ setPublishingStatus(String, PublishingRecordStatus, String): PublishingStatusItem
++ setPublishingStatus(String, PublishingRecordStatus, String, String): PublishingStatusItem
+}
+
+'Activity
+class GetBookActivity {
+- recommendationServiceClient: RecommendationsServiceClient
+- catalogDao: CatalogDao
++ GetBookActivity(CatalogDao, RecommendationServiceClient)
++ execute(GetBookRequest): GetBookResponse
+}
+class GetPublishingStatusActivity{
++ GetPublishingStatusActivity()
++ execute(GetPublishingStatusRequest): GetPublishingStatusResponse
+}
+class RemoveBookFromCatalogActivity{
++ RemoveBookFromCatalogActivity()
++ execute(RemoveBookFromCatalogRequest): RemoveBookFromCatalogResponse
+}
+class SubmitBookForPublishingActivity{
+- publishingStatusDao: PublishingStatusDao
++ SubmitBookForPublishingActivity(PublishingStatusDao)
++ execute(SubmitBookForPublishingRequest): SubmitBookForPublishingResponse
+}
+'Client
+class RecommendationsServiceClient  {
+- recommendationService: RecommendationService
++ RecommendationServiceClient(RecommendationService)
++ getBookRecommendations(BookGenre): List<BookRecommendation>
+}
+'Model
+class CatalogItemVersion {
+- @DynamoDBHashKey bookId: String
+- @DynamoDBRangeKey version: int
+- inactive: boolean
+- author: String
+- text: String
+- genre: BookGenre
++ getBookId(): String
++ setBookIde(String): void
++ getVersion(): int
+}
+class PublishingStatusItem {
+- @DynamoDBHashKey publishingRecordId: String
+- @DynamoDBRangeKey status: PublishingRecordStatus
+- statusMessage: String
+- bookId: String
++ getPublishingRecordId(): String
++ setPublishingRecordId(String): void
++ getStatus(): PublishingRecordStatus
++ setStatus(PublishingRecordStatus): void
+}
+'Exceptions
+class BookNotFoundException {
+- serialVersionUID : long
++ BookNotFoundException(String)
++ BookNotFoundException(String, Throwable)
+}
+class PublishingStatusNotFoundException {
+- serialVersionUID: long
++ PublishingStatusNotFoundException(String)
++PublishingStatusNotFoundException(String, Throwable)
+}
+'Metrics
+'Relationship
+GetBookActivity --> RecommendationsServiceClient
+GetBookActivity --> CatalogDao
+CatalogItemVersion -- CatalogDao
+PublishingStatusItem -- PublishingStatusDao
+SubmitBookForPublishingActivity --> PublishingStatusDao
+RecommendationServiceClient --> RecommendationService
+CatalogDao -- BookNotFoundException
+PublishingStatusItem -- PublishingStatusDao
+
+@enduml
