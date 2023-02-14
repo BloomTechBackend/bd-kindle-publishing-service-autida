@@ -1,1 +1,12 @@
 PARTICIPANTS: use this file for creating the remove book from catalog diagram in mastery task 01
+@startuml
+actor Client as c
+participant RemoveBookFromCatalogActivity as rbc
+participant CatalogDao as cd
+
+c -> rbc: execute(RemoveBookFromCatalogRequests)
+rbc -> cd: removeBookFromCatalog()
+cd -> rbc: BookNotFoundException
+rbc -> c: RemoveBookFromCatalogResponse
+
+@enduml

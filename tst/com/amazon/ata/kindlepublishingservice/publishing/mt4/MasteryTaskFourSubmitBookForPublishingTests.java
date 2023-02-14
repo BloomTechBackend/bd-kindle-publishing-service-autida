@@ -1,4 +1,4 @@
-package com.amazon.ata.kindlepublishingservice.mastery.mt4;
+package com.amazon.ata.kindlepublishingservice.publishing.mt4;
 
 import com.amazon.ata.kindlepublishingservice.dagger.ATAKindlePublishingServiceManager;
 import com.amazon.ata.kindlepublishingservice.dagger.ApplicationComponent;
