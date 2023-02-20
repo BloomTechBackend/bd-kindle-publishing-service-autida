@@ -9,6 +9,7 @@ import com.amazon.ata.kindlepublishingservice.dynamodb.models.PublishingStatusIt
 import com.amazon.ata.kindlepublishingservice.enums.PublishingRecordStatus;
 import com.amazon.ata.kindlepublishingservice.publishing.BookPublishRequest;
 
+import com.amazon.ata.kindlepublishingservice.publishing.BookPublishRequestManager;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.commons.lang3.StringUtils;
@@ -24,15 +25,16 @@ import javax.inject.Inject;
 public class SubmitBookForPublishingActivity {
 
     private PublishingStatusDao publishingStatusDao;
-
+    private BookPublishRequestManager bookPublishRequestManager;
     /**
      * Instantiates a new SubmitBookForPublishingActivity object.
      *
      * @param publishingStatusDao PublishingStatusDao to access the publishing status table.
      */
     @Inject
-    public SubmitBookForPublishingActivity(PublishingStatusDao publishingStatusDao) {
+    public SubmitBookForPublishingActivity(PublishingStatusDao publishingStatusDao, BookPublishRequestManager bookPublishRequestManager) {
         this.publishingStatusDao = publishingStatusDao;
+        this.bookPublishRequestManager = bookPublishRequestManager;
     }
 
     /**
@@ -53,9 +55,12 @@ public class SubmitBookForPublishingActivity {
         PublishingStatusItem item =  publishingStatusDao.setPublishingStatus(bookPublishRequest.getPublishingRecordId(),
                 PublishingRecordStatus.QUEUED,
                 bookPublishRequest.getBookId());
-
+            if(item.getBookId() != null) {
+                bookPublishRequestManager.addBookPublishRequest(bookPublishRequest);
+            }
+        System.out.println(bookPublishRequestManager.getBookPublishRequestToProcess().getPublishingRecordId());
         return SubmitBookForPublishingResponse.builder()
-                .withPublishingRecordId(item.getPublishingRecordId())
+                .withPublishingRecordId(bookPublishRequestManager.getBookPublishRequestToProcess().getPublishingRecordId())
                 .build();
     }
 }

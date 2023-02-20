@@ -67,4 +67,8 @@ public class CatalogDao {
         book.setInactive(true);
         dynamoDbMapper.save(book);
     }
+
+    public void validateBookExists(String bookId) {
+        getBookFromCatalog(bookId);
+    }
 }
