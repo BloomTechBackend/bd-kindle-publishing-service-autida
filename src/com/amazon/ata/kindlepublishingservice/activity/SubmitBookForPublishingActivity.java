@@ -1,5 +1,7 @@
 package com.amazon.ata.kindlepublishingservice.activity;
 
+import com.amazon.ata.kindlepublishingservice.exceptions.BookNotFoundException;
+import com.amazon.ata.kindlepublishingservice.exceptions.KindlePublishingClientException;
 import com.amazon.ata.kindlepublishingservice.models.requests.SubmitBookForPublishingRequest;
 import com.amazon.ata.kindlepublishingservice.models.response.SubmitBookForPublishingResponse;
 import com.amazon.ata.kindlepublishingservice.converters.BookPublishRequestConverter;
@@ -26,15 +28,17 @@ public class SubmitBookForPublishingActivity {
 
     private PublishingStatusDao publishingStatusDao;
     private BookPublishRequestManager bookPublishRequestManager;
+    private CatalogDao catalogDao;
     /**
      * Instantiates a new SubmitBookForPublishingActivity object.
      *
      * @param publishingStatusDao PublishingStatusDao to access the publishing status table.
      */
     @Inject
-    public SubmitBookForPublishingActivity(PublishingStatusDao publishingStatusDao, BookPublishRequestManager bookPublishRequestManager) {
+    public SubmitBookForPublishingActivity(PublishingStatusDao publishingStatusDao, BookPublishRequestManager bookPublishRequestManager, CatalogDao catalogDao) {
         this.publishingStatusDao = publishingStatusDao;
         this.bookPublishRequestManager = bookPublishRequestManager;
+        this.catalogDao = catalogDao;
     }
 
     /**
@@ -50,17 +54,22 @@ public class SubmitBookForPublishingActivity {
         final BookPublishRequest bookPublishRequest = BookPublishRequestConverter.toBookPublishRequest(request);
 
         // TODO: If there is a book ID in the request, validate it exists in our catalog
+        if(bookPublishRequest.getBookId() != null) {
+            catalogDao.validateBookExists(bookPublishRequest.getBookId());
+        }
+            bookPublishRequestManager.addBookPublishRequest(bookPublishRequest);
+//        }
         // TODO: Submit the BookPublishRequest for processing
 
-        PublishingStatusItem item =  publishingStatusDao.setPublishingStatus(bookPublishRequest.getPublishingRecordId(),
-                PublishingRecordStatus.QUEUED,
-                bookPublishRequest.getBookId());
-            if(item.getBookId() != null) {
-                bookPublishRequestManager.addBookPublishRequest(bookPublishRequest);
-            }
-        System.out.println(bookPublishRequestManager.getBookPublishRequestToProcess().getPublishingRecordId());
+        PublishingStatusItem item =
+                publishingStatusDao.setPublishingStatus(
+                    bookPublishRequest.getPublishingRecordId(),
+                    PublishingRecordStatus.QUEUED,
+                    bookPublishRequest.getBookId());
+
+        System.out.println(item);
         return SubmitBookForPublishingResponse.builder()
-                .withPublishingRecordId(bookPublishRequestManager.getBookPublishRequestToProcess().getPublishingRecordId())
+                .withPublishingRecordId(item.getPublishingRecordId())
                 .build();
     }
 }

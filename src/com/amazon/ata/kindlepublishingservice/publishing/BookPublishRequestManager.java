@@ -1,22 +1,20 @@
 package com.amazon.ata.kindlepublishingservice.publishing;
 
 import javax.inject.Inject;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.*;
 
 public class BookPublishRequestManager {
-    Queue<BookPublishRequest> bookPublishRequestStack;
+    Queue<BookPublishRequest> bookPublishRequestQueue;
     @Inject
     public BookPublishRequestManager() {
-        bookPublishRequestStack = new LinkedList<>();
+        bookPublishRequestQueue = new LinkedList<>();
     }
     public void addBookPublishRequest(BookPublishRequest bookPublishRequest) {
-        bookPublishRequestStack.add(bookPublishRequest);
+        bookPublishRequestQueue.add(bookPublishRequest);
     }
     public BookPublishRequest getBookPublishRequestToProcess() {
-        if(!bookPublishRequestStack.isEmpty()) {
-            bookPublishRequestStack.peek();
+        if(!bookPublishRequestQueue.isEmpty()) {
+            return bookPublishRequestQueue.peek();
         }
         return null;
     }
