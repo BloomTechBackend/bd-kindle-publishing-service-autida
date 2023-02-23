@@ -59,7 +59,6 @@ public class SubmitBookForPublishingActivityTest {
 
         // WHEN
         SubmitBookForPublishingResponse response = activity.execute(request);
-        System.out.println(response.getPublishingRecordId());
         // THEN
         assertEquals("publishing.123", response.getPublishingRecordId(), "Expected response to return a publishing" +
                 "record id.");
