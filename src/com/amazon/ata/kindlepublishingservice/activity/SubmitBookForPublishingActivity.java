@@ -1,5 +1,7 @@
 package com.amazon.ata.kindlepublishingservice.activity;
 
+import com.amazon.ata.kindlepublishingservice.App;
+import com.amazon.ata.kindlepublishingservice.dagger.DataAccessModule;
 import com.amazon.ata.kindlepublishingservice.exceptions.BookNotFoundException;
 import com.amazon.ata.kindlepublishingservice.exceptions.KindlePublishingClientException;
 import com.amazon.ata.kindlepublishingservice.models.requests.SubmitBookForPublishingRequest;
@@ -28,7 +30,7 @@ import javax.inject.Inject;
 public class SubmitBookForPublishingActivity {
 
     private PublishingStatusDao publishingStatusDao;
-    private BookPublishRequestManager bookPublishRequestManager;
+    private final BookPublishRequestManager bookPublishRequestManager;
     private CatalogDao catalogDao;
     /**
      * Instantiates a new SubmitBookForPublishingActivity object.
@@ -36,10 +38,11 @@ public class SubmitBookForPublishingActivity {
      * @param publishingStatusDao PublishingStatusDao to access the publishing status table.
      */
     @Inject
-    public SubmitBookForPublishingActivity(PublishingStatusDao publishingStatusDao, BookPublishRequestManager bookPublishRequestManager, CatalogDao catalogDao) {
+    public SubmitBookForPublishingActivity(PublishingStatusDao publishingStatusDao) {
+        System.out.println("activity called!");
+        this.bookPublishRequestManager = App.component.provideBookPublishRequestManager();
         this.publishingStatusDao = publishingStatusDao;
-        this.bookPublishRequestManager = bookPublishRequestManager;
-        this.catalogDao = catalogDao;
+        this.catalogDao = new DataAccessModule().provideCatalogDao();
     }
 
     /**
@@ -57,6 +60,7 @@ public class SubmitBookForPublishingActivity {
         }
         final BookPublishRequest bookPublishRequest = BookPublishRequestConverter.toBookPublishRequest(request);
         bookPublishRequestManager.addBookPublishRequest(bookPublishRequest);
+
         PublishingStatusItem item = publishingStatusDao.setPublishingStatus(
                 bookPublishRequest.getPublishingRecordId(),
                 PublishingRecordStatus.QUEUED,

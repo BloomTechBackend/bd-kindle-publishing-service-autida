@@ -29,10 +29,11 @@ public class GetPublishingStatusActivity {
         for(PublishingStatusItem item: publishingStatusItemList) {
             String statusMessage = item.getStatusMessage();
             String status = item.getStatus().toString();
+// bookId here is null, is it ok to be null? Reasons why null?
             String bookId = item.getBookId();
             publishingStatusRecords.add(
                     new PublishingStatusRecord(status,statusMessage,bookId)
-            );
+            ); // second wait output here has null bookId
         }
         return GetPublishingStatusResponse.builder()
                 .withPublishingStatusHistory(publishingStatusRecords)

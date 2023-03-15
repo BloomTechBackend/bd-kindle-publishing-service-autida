@@ -52,6 +52,7 @@ public class SubmitBookForPublishingActivityTest {
 
         PublishingStatusItem item = new PublishingStatusItem();
         item.setPublishingRecordId("publishing.123");
+//        ?
         // KindlePublishingUtils generates a random publishing status ID for us
         when(publishingStatusDao.setPublishingStatus(anyString(),
                 eq(PublishingRecordStatus.QUEUED),

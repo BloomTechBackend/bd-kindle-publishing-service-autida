@@ -1,4 +1,4 @@
-package com.amazon.ata.kindlepublishingservice.publishing.mt4;
+package com.amazon.ata.kindlepublishingservice.mastery.mt4;
 
 import com.amazon.ata.kindlepublishingservice.dagger.ATAKindlePublishingServiceManager;
 import com.amazon.ata.kindlepublishingservice.dagger.ApplicationComponent;
@@ -54,7 +54,7 @@ public class MasteryTaskFourSubmitBookForPublishingTests extends IntegrationTest
 
         // WHEN
         SubmitBookForPublishingResponse response = COMPONENT.provideSubmitBookForPublishingActivity().execute(request);
-
+        System.out.println(response.getPublishingRecordId());
         // THEN
         // wait for queued status
         waitForExpectedStatus(response.getPublishingRecordId(),
@@ -68,7 +68,6 @@ public class MasteryTaskFourSubmitBookForPublishingTests extends IntegrationTest
         // wait for successful status
         PublishingStatusRecord successful = waitForExpectedStatus(response.getPublishingRecordId(),
             PublishingStatus.SUCCESSFUL);
-
         assertNotNull(successful.getBookId(), "A successful PublishingStatusRecord should contain a bookId.");
 
         // a book should exist now
@@ -185,6 +184,7 @@ public class MasteryTaskFourSubmitBookForPublishingTests extends IntegrationTest
                 .findFirst();
 
             if (record.isPresent()) {
+                //What is Optional.empty?
                 System.out.println(String.format("Attempt [%s]: Found record! [%s]",
                     currentAttempt,
                     record.get()));

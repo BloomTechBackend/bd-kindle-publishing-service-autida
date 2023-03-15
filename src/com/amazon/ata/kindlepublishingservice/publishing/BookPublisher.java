@@ -39,11 +39,13 @@ public class BookPublisher {
      * Start publishing books.
      */
     public void start() {
+
         if (isRunning) {
             return;
         }
         isRunning = true;
         scheduledExecutorService.scheduleWithFixedDelay(publishTask, 0, 1, TimeUnit.SECONDS);
+        System.out.println("PublishTask running!");
     }
 
     /**

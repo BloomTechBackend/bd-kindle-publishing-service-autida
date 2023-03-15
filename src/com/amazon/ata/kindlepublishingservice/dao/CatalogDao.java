@@ -70,9 +70,43 @@ public class CatalogDao {
 
     public void validateBookExists(String bookId) {
         CatalogItemVersion book = getLatestVersionOfBook(bookId);
-
         if (book == null) {
             throw new BookNotFoundException(String.format("No book found for id: %s", bookId));
         }
+    }
+
+    public CatalogItemVersion createOrUpdateBook(KindleFormattedBook kindleFormattedBook) {
+        CatalogItemVersion catalogItemVersion = new CatalogItemVersion();
+        if(kindleFormattedBook.getBookId() == null) {
+//            System.out.println(String.format("We're inside, received: %s", kindleFormattedBook.getBookId()));
+            catalogItemVersion.setBookId(KindlePublishingUtils.generateBookId());
+            catalogItemVersion.setGenre(kindleFormattedBook.getGenre());
+            catalogItemVersion.setVersion(1);
+            catalogItemVersion.setInactive(false);
+            catalogItemVersion.setTitle(kindleFormattedBook.getTitle());
+            catalogItemVersion.setAuthor(kindleFormattedBook.getAuthor());
+            catalogItemVersion.setText(kindleFormattedBook.getText());
+            dynamoDbMapper.save(catalogItemVersion);
+            return catalogItemVersion;
+
+        } else {
+            catalogItemVersion = getLatestVersionOfBook(kindleFormattedBook.getBookId());
+            if(catalogItemVersion == null) {
+                throw new BookNotFoundException("The bookId is not found in the catalog.");
+            } else {
+                //set previous itemVersion to inactive
+                catalogItemVersion.setInactive(true);
+                dynamoDbMapper.save(catalogItemVersion);
+                // set the new itemVersion to Active
+                catalogItemVersion.setBookId(kindleFormattedBook.getBookId());
+                catalogItemVersion.setInactive(false);
+                catalogItemVersion.setVersion(catalogItemVersion.getVersion() + 1);
+                catalogItemVersion.setTitle(kindleFormattedBook.getTitle());
+                catalogItemVersion.setAuthor(kindleFormattedBook.getAuthor());
+                catalogItemVersion.setText(kindleFormattedBook.getText());
+                dynamoDbMapper.save(catalogItemVersion);
+            }
+        }
+        return catalogItemVersion;
     }
 }
