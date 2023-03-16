@@ -42,7 +42,7 @@ public class SubmitBookForPublishingActivity {
         System.out.println("activity called!");
         this.bookPublishRequestManager = App.component.provideBookPublishRequestManager();
         this.publishingStatusDao = publishingStatusDao;
-        this.catalogDao = new DataAccessModule().provideCatalogDao();
+        this.catalogDao =App.component.provideCatalogDao();
     }
 
     /**

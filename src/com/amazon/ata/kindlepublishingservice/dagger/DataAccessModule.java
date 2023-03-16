@@ -32,11 +32,11 @@ public class DataAccessModule {
         return new DynamoDBMapper(amazonDynamoDBClient);
     }
 
-    public CatalogDao provideCatalogDao() {
-        return new CatalogDao(provideDynamoDBMapper());
-    }
+//    public CatalogDao provideCatalogDao() {
+//        return new CatalogDao(provideDynamoDBMapper());
+//    }
 
-    public PublishingStatusDao providePublishingStatusDao() {
-        return new PublishingStatusDao(provideDynamoDBMapper());
-    }
+//    public PublishingStatusDao providePublishingStatusDao() {
+//        return new PublishingStatusDao(provideDynamoDBMapper());
+//    }
 }

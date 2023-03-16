@@ -2,32 +2,36 @@ package com.amazon.ata.kindlepublishingservice.publishing;
 
 import com.amazon.ata.kindlepublishingservice.App;
 import com.amazon.ata.kindlepublishingservice.dagger.DataAccessModule;
+import com.amazon.ata.kindlepublishingservice.dao.CatalogDao;
+import com.amazon.ata.kindlepublishingservice.dao.PublishingStatusDao;
 import com.amazon.ata.kindlepublishingservice.dynamodb.models.CatalogItemVersion;
 import com.amazon.ata.kindlepublishingservice.enums.PublishingRecordStatus;
 
 public class BookPublishTask implements Runnable {
-    private final DataAccessModule dataAccessModule;
+    private PublishingStatusDao publishingStatusDao;
+    private CatalogDao catalogDao;
 
     public BookPublishTask() {
-        this.dataAccessModule = new DataAccessModule();
+        this.publishingStatusDao = App.component.providePublishingStatusDao();
+        this.catalogDao = App.component.provideCatalogDao();
     }
     @Override
     public void run() {
         CatalogItemVersion catalogItemVersion = null;
         BookPublishRequest bookPublishRequest = App.component.provideBookPublishRequestManager().getBookPublishRequestToProcess();
         if (bookPublishRequest != null) {
-            dataAccessModule.providePublishingStatusDao().setPublishingStatus(
+            publishingStatusDao.setPublishingStatus(
                     bookPublishRequest.getPublishingRecordId(),
                     PublishingRecordStatus.IN_PROGRESS,
                     bookPublishRequest.getBookId());
             try {
-                catalogItemVersion = dataAccessModule.provideCatalogDao().createOrUpdateBook(KindleFormatConverter.format(bookPublishRequest));
-                dataAccessModule.providePublishingStatusDao().setPublishingStatus(
+                catalogItemVersion = catalogDao.createOrUpdateBook(KindleFormatConverter.format(bookPublishRequest));
+                publishingStatusDao.setPublishingStatus(
                         bookPublishRequest.getPublishingRecordId(),
                         PublishingRecordStatus.SUCCESSFUL,
                         catalogItemVersion.getBookId());
             } catch (Exception e) {
-                dataAccessModule.providePublishingStatusDao().setPublishingStatus(
+                publishingStatusDao.setPublishingStatus(
                         bookPublishRequest.getPublishingRecordId(),
                         PublishingRecordStatus.FAILED,
                         catalogItemVersion.getBookId(),

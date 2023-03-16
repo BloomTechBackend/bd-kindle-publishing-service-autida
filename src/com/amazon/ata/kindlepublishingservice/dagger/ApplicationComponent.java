@@ -28,4 +28,6 @@ public interface ApplicationComponent {
 
     ATAKindlePublishingServiceManager provideATAKindlePublishingServiceManager();
     BookPublishRequestManager provideBookPublishRequestManager();
+    CatalogDao provideCatalogDao();
+    PublishingStatusDao providePublishingStatusDao();
 }
