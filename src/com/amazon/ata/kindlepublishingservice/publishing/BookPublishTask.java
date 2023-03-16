@@ -20,21 +20,19 @@ public class BookPublishTask implements Runnable {
                     bookPublishRequest.getPublishingRecordId(),
                     PublishingRecordStatus.IN_PROGRESS,
                     bookPublishRequest.getBookId());
-            //Format book
-            KindleFormattedBook kindleFormattedBook = KindleFormatConverter.format(bookPublishRequest);
             try {
-                catalogItemVersion = dataAccessModule.provideCatalogDao().createOrUpdateBook(kindleFormattedBook);
+                catalogItemVersion = dataAccessModule.provideCatalogDao().createOrUpdateBook(KindleFormatConverter.format(bookPublishRequest));
+                dataAccessModule.providePublishingStatusDao().setPublishingStatus(
+                        bookPublishRequest.getPublishingRecordId(),
+                        PublishingRecordStatus.SUCCESSFUL,
+                        catalogItemVersion.getBookId());
             } catch (Exception e) {
                 dataAccessModule.providePublishingStatusDao().setPublishingStatus(
                         bookPublishRequest.getPublishingRecordId(),
                         PublishingRecordStatus.FAILED,
-                        bookPublishRequest.getBookId(),
+                        catalogItemVersion.getBookId(),
                         "Book is not found in the catalog.");
             }
-            dataAccessModule.providePublishingStatusDao().setPublishingStatus(
-                    bookPublishRequest.getPublishingRecordId(),
-                    PublishingRecordStatus.SUCCESSFUL,
-                    catalogItemVersion.getBookId());
         }
     }
 }
