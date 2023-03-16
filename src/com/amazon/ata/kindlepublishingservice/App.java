@@ -3,7 +3,6 @@ package com.amazon.ata.kindlepublishingservice;
 import com.amazon.ata.kindlepublishingservice.dagger.ATAKindlePublishingServiceManager;
 import com.amazon.ata.kindlepublishingservice.dagger.ApplicationComponent;
 import com.amazon.ata.kindlepublishingservice.dagger.DaggerApplicationComponent;
-import com.amazon.ata.kindlepublishingservice.publishing.BookPublishRequest;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -18,9 +17,7 @@ public class App {
         ATAKindlePublishingServiceManager publishingManager = component.provideATAKindlePublishingServiceManager();
         try {
             publishingManager.start();
-            System.out.println("Publishing manager running!");
         } catch (Exception e) {
-            System.out.println("Something went wrong!");
             System.out.println(e);
         }
     }

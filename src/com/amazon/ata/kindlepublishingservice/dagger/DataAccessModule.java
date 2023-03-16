@@ -39,7 +39,4 @@ public class DataAccessModule {
     public PublishingStatusDao providePublishingStatusDao() {
         return new PublishingStatusDao(provideDynamoDBMapper());
     }
-    public BookPublishRequestManager provideBookPublishingManager() {
-        return new BookPublishRequestManager();
-    }
 }

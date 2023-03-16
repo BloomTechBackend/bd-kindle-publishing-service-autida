@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Singleton
 public class BookPublishRequestManager {
     private static final Queue<BookPublishRequest> bookPublishRequestQueue = new ConcurrentLinkedQueue<>();
     @Inject

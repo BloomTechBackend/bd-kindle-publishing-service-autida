@@ -87,7 +87,6 @@ public class PublishingStatusDao {
         publishingStatusItem.setPublishingRecordId(publishingStatusId);
         DynamoDBQueryExpression<PublishingStatusItem> queryExpression = new DynamoDBQueryExpression<PublishingStatusItem>()
                 .withHashKeyValues(publishingStatusItem);
-
             List<PublishingStatusItem> publishingStatusItems = dynamoDbMapper.query(PublishingStatusItem.class, queryExpression);
             if(publishingStatusItems.isEmpty()) {
                 throw new PublishingStatusNotFoundException("Status not found!");

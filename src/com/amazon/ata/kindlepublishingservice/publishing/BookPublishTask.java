@@ -13,12 +13,9 @@ public class BookPublishTask implements Runnable {
     }
     @Override
     public void run() {
-        System.out.println("BookPublishTask run() called!");
         CatalogItemVersion catalogItemVersion = null;
         BookPublishRequest bookPublishRequest = App.component.provideBookPublishRequestManager().getBookPublishRequestToProcess();
-        if (bookPublishRequest == null) {
-            return;
-        } else {
+        if (bookPublishRequest != null) {
             dataAccessModule.providePublishingStatusDao().setPublishingStatus(
                     bookPublishRequest.getPublishingRecordId(),
                     PublishingRecordStatus.IN_PROGRESS,
@@ -34,12 +31,10 @@ public class BookPublishTask implements Runnable {
                         bookPublishRequest.getBookId(),
                         "Book is not found in the catalog.");
             }
-//            System.out.println(String.format("Above success %s,", bookPublishRequest.getBookId()));
             dataAccessModule.providePublishingStatusDao().setPublishingStatus(
                     bookPublishRequest.getPublishingRecordId(),
                     PublishingRecordStatus.SUCCESSFUL,
                     catalogItemVersion.getBookId());
-//        }
         }
     }
 }
